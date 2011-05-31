@@ -14,7 +14,6 @@ class Cowntdown
 
   def forever
     timer
-    @timer.add_observer self
     Thread.new {
       @timer.start
     }
