@@ -4,39 +4,47 @@ module TickTacker
   class Timer
     include Observable
 
-    attr_reader :total_minutes, :ticker_time
+    attr_reader :total_time
     attr_accessor :elapsed_time
 
-    def initialize(options = {:with => 25.minutes})
-      @total_minutes = options[:with]
-      @ticker_time = 1.second
-      @ticker = Ticker.new
+    def initialize
+      with(:total_time => 25.minutes)
+    end
+
+    def with(options)
+      default = {:ticker => Ticker.new}
+      config = default.merge(options)
+      @ticker = config[:ticker]
+      @ticker_time = @ticker.interval
+      @total_time = config[:total_time]
+      self
     end
 
     def notify
-      time_remaining = total_minutes - elapsed_time
+      time_remaining = total_time - elapsed_time
       notification_options = {:time_remaining => time_remaining}
       notify_observers(notification_options)
     end
 
     def update_time_elapsed(time)
       @elapsed_time += time
-      if @elapsed_time >= @total_minutes
+      if @elapsed_time >= @total_time
         @ticker.stop
       end
     end
 
-    def update(options)
+    def update(options = {})
       @elapsed_time ||= 0
-      options[:time_elapsed] = 1 if options[:time_elapsed].nil?
-      update_time_elapsed(options[:time_elapsed])
+      default = {:time_elapsed => @ticker.interval}
+      config = default.merge(options)
+      update_time_elapsed(config[:time_elapsed])
       changed
       notify
     end
 
     def start
-      @ticker.repeat_every 1.second do 
-        self.update({})
+      @ticker.repeat do
+        self.update
       end
     end
 
