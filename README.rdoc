@@ -1,0 +1,24 @@
+= Tick Tacker (tick_tacker)
+
+A timer with a internal clock wich uses the observer pattern to notify other objects when the time pass.
+
+== Install
+* You need to install the gem
+
+  $ gem install tick_tacker
+
+Done!
+
+== Usage
+
+  @timer = TickTacker::Timer.new.with :total_time => 5.seconds
+  @timer.add_observer self
+  Thread.new {
+    @timer.start
+  }
+
+* You can check the examples/ dir to see more examples.
+
+== Copyright
+
+Copyright (c) 2011 Ricardo Valeriano. See LICENSE.txt details.
